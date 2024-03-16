@@ -1,18 +1,48 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from "@playwright/test";
 
-test('has title', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
+const UI_URL = "http://localhost:5173/";
 
-  // Expect a title "to contain" a substring.
-  await expect(page).toHaveTitle(/Playwright/);
+test("should allow the user to sign in", async ({ page }) => {
+  await page.goto(UI_URL);
+
+  // click the sign in button
+  await page.getByRole("link", { name: "Sign In" }).click();
+
+  // check for correct page
+  await expect(page.getByRole("heading", { name: "Sign In" })).toBeVisible();
+
+  // input deatils
+  await page.locator("[name=email]").fill("1@1.com");
+  await page.locator("[name=password]").fill("qwerty");
+
+  // click on login button
+  await page.getByRole("button", { name: "Login" }).click();
+
+  // check for correct data
+  await expect(page.getByText("Sign In Successful!")).toBeVisible();
+  await expect(page.getByRole("link", { name: "My Bookings" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "My Hotels" })).toBeVisible();
 });
 
-test('get started link', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
+test("should allow user to register", async ({ page }) => {
+  const testEmail = `test_register_${Math.floor(Math.random() * 9000 + 1000)}@test.com`
+  await page.goto(UI_URL);
 
-  // Click the get started link.
-  await page.getByRole('link', { name: 'Get started' }).click();
+  await page.getByRole("link", { name: "Sign In" }).click();
+  await page.getByRole("link", { name: "Create an account here" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Create an Account" })
+  ).toBeVisible();
 
-  // Expects page to have a heading with the name of Installation.
-  await expect(page.getByRole('heading', { name: 'Installation' })).toBeVisible();
+  await page.locator("[name=firstName]").fill("test_fName1");
+  await page.locator("[name=lastName]").fill("test_lName1");
+  await page.locator("[name=email]").fill(testEmail);
+  await page.locator("[name=password]").fill("qwerty");
+  await page.locator("[name=confirmPassword]").fill("qwerty");
+
+  await page.getByRole("button", { name: "Create Account" }).click();
+
+  await expect(page.getByText("Registration Successful!")).toBeVisible();
+  await expect(page.getByRole("link", { name: "My Bookings" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "My Hotels" })).toBeVisible();
 });
