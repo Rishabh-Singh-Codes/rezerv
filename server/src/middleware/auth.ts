@@ -21,7 +21,7 @@ const verifyToken = (req: Request, res: Response, next: NextFunction) => {
     req.userId = (decoded as JwtPayload).userId;
     next();
   } catch (error) {
-    console.log("error", error);
+    console.log("Error: token verification \n", error);
     return res.status(401).send({ message: "Unauthorized" });
   }
 };
