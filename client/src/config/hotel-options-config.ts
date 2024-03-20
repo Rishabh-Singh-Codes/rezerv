@@ -15,3 +15,16 @@ export const hotelTypes = [
   "Self Catering",
   "Bed & Breakfast"
 ];
+
+export const hotelFacilities = [
+    "Free Wifi",
+    "Parking",
+    "Meeting Rooms",
+    "Outdoor Pool",
+    "Gym",
+    "Room Service",
+    "Spa",
+    "Kids Play Area",
+    "Sports Center",
+    "Laundry"
+]
