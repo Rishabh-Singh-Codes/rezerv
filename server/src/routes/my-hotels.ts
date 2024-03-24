@@ -1,9 +1,10 @@
 import express, { Request, Response } from "express";
 import multer from "multer";
 import cloudinary from "cloudinary";
-import Hotel, { HotelType } from "../models/hotel";
+import Hotel from "../models/hotel";
 import verifyToken from "../middleware/auth";
 import { body } from "express-validator";
+import { HotelType } from "../shared/types";
 
 const router = express.Router();
 
@@ -15,7 +16,7 @@ const upload = multer({
   },
 });
 
-// api/my-hotels
+// POST: api/my-hotels: Add a hotel
 router.post(
   "/",
   verifyToken,
@@ -79,5 +80,17 @@ router.post(
     }
   }
 );
+
+// GET: api/my-hotels: fetching all user hotels
+
+router.get("/", verifyToken, async (req: Request, res: Response) => {
+  try {
+    const hotels = await Hotel.find({ userId: req.userId });
+    res.json(hotels);
+  } catch (error) {
+    console.log("Error: fetching all user hotels \n", error);
+    res.status(500).json({ message: "Error fetching hotels" });
+  }
+});
 
 export default router;
