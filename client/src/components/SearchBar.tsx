@@ -3,10 +3,11 @@ import { useSearchContext } from "../contexts/SearchContext";
 import { FaEarthAsia } from "react-icons/fa6";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { FaRegCalendar } from "react-icons/fa6";
+import { useNavigate } from "react-router-dom";
 
 const SearchBar = () => {
   const search = useSearchContext();
+  const navigate = useNavigate();
 
   const [destination, setDestination] = useState<string>(search.destination);
   const [checkIn, setCheckIn] = useState<Date>(search.checkIn);
@@ -23,6 +24,18 @@ const SearchBar = () => {
       adultCount,
       childCount
     );
+
+    navigate("/search");
+  };
+
+  const handleClear = (event: FormEvent) => {
+    event.preventDefault();
+
+    setDestination("");
+    setCheckIn(new Date());
+    setCheckOut(new Date());
+    setAdultCount(1);
+    setChildCount(0);
   };
 
   const minDate = new Date();
@@ -103,10 +116,17 @@ const SearchBar = () => {
         </label>
       </div>
       <div className="flex gap-1">
-        <button className="bg-blue-500 text-white p-2 font-bold h-full hover:bg-blue-400 text-lg rounded-md cursor-pointer w-2/3 transition">
+        <button
+          type="submit"
+          className="bg-blue-500 text-white p-2 font-bold h-full hover:bg-blue-400 text-base rounded-md cursor-pointer w-2/3 transition"
+        >
           Search
         </button>
-        <button className="bg-red-500 text-white p-2 font-bold h-full hover:bg-red-400 text- rounded-md cursor-pointer w-1/3 transition">
+        <button
+          type="reset"
+          onClick={(event) => handleClear(event)}
+          className="bg-red-500 text-white py-2 font-bold h-full hover:bg-red-400 text-base rounded-md cursor-pointer w-1/3 transition"
+        >
           Clear
         </button>
       </div>
