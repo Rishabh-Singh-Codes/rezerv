@@ -4,10 +4,14 @@ import * as apiClient from "../api-client";
 import { useState } from "react";
 import SearchResultCard from "../components/SearchResultCard";
 import Pagination from "../components/Pagination";
+import StarRatingFilter from "../components/StarRatingFilter";
+import HotelTypesFilter from "../components/HotelTypesFilter";
 
 const Search = () => {
   const search = useSearchContext();
   const [page, setPage] = useState<number>(1);
+  const [selectedStars, setSelectedStars] = useState<string[]>([]);
+  const [selectedHotelTypes, setSelectedHotelTypes] = useState<string[]>([]);
 
   const searchParams = {
     destination: search.destination,
@@ -16,11 +20,36 @@ const Search = () => {
     adultCount: search.adultCount.toString(),
     childCount: search.childCount.toString(),
     page: page.toString(),
+    stars: selectedStars,
+    types: selectedHotelTypes,
+    maxPrice: ""
   };
 
   const { data: hotelData } = useQuery(["searchQuery", searchParams], () =>
     apiClient.searchHotels(searchParams)
   );
+
+  const handleStarsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const starRating = event.target.value;
+
+    setSelectedStars((prevStars) =>
+      event.target.checked
+        ? [...prevStars, starRating]
+        : prevStars.filter((star) => star !== starRating)
+    );
+  };
+
+  const handleHotelTypeChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const hotelType = event.target.value;
+
+    setSelectedHotelTypes((prevHotelTypes) =>
+      event.target.checked
+        ? [...prevHotelTypes, hotelType]
+        : prevHotelTypes.filter((hotel) => hotel !== hotelType)
+    );
+  };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-[250px_1fr] gap-5">
@@ -30,6 +59,14 @@ const Search = () => {
             Filter by:
           </h3>
           {/* TODO: Filters */}
+          <StarRatingFilter
+            selectedStars={selectedStars}
+            onChange={handleStarsChange}
+          />
+          <HotelTypesFilter
+            selectedHotelTypes={selectedHotelTypes}
+            onChange={handleHotelTypeChange}
+          />
         </div>
       </div>
       <div className="flex flex-col gap-5">
@@ -41,7 +78,7 @@ const Search = () => {
           {/* TODO: sort options */}
         </div>
         {hotelData?.data.map((hotel) => (
-          <SearchResultCard hotel={hotel} />
+          <SearchResultCard hotel={hotel} key={hotel._id} />
         ))}
         <div>
           <Pagination
