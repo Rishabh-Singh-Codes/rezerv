@@ -6,12 +6,18 @@ import SearchResultCard from "../components/SearchResultCard";
 import Pagination from "../components/Pagination";
 import StarRatingFilter from "../components/StarRatingFilter";
 import HotelTypesFilter from "../components/HotelTypesFilter";
+import FacilitiesFilter from "../components/FacilitiesFilter";
+import PriceFilter from "../components/PriceFilter";
+import SearchSortOptions from "../components/SearchSortOptions";
 
 const Search = () => {
   const search = useSearchContext();
   const [page, setPage] = useState<number>(1);
   const [selectedStars, setSelectedStars] = useState<string[]>([]);
   const [selectedHotelTypes, setSelectedHotelTypes] = useState<string[]>([]);
+  const [selectedFacilities, setSelectedFacilities] = useState<string[]>([]);
+  const [selectedPrice, setSelectedPrice] = useState<number | undefined>();
+  const [selectedSortOption, setSelectedSortOption] = useState<string>("");
 
   const searchParams = {
     destination: search.destination,
@@ -22,7 +28,9 @@ const Search = () => {
     page: page.toString(),
     stars: selectedStars,
     types: selectedHotelTypes,
-    maxPrice: ""
+    facilities: selectedFacilities,
+    maxPrice: selectedPrice?.toString(),
+    sortOption: selectedSortOption,
   };
 
   const { data: hotelData } = useQuery(["searchQuery", searchParams], () =>
@@ -51,6 +59,16 @@ const Search = () => {
     );
   };
 
+  const handleFacilityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const facility = event.target.value;
+
+    setSelectedFacilities((prevFacilities) =>
+      event.target.checked
+        ? [...prevFacilities, facility]
+        : prevFacilities.filter((prevFacility) => prevFacility !== facility)
+    );
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-[250px_1fr] gap-5">
       <div className="rounded-md border border-slate-300 p-5 h-fit sticky top-10">
@@ -58,7 +76,6 @@ const Search = () => {
           <h3 className="text-lg font-semibold border-b border-slate-300 pb-5">
             Filter by:
           </h3>
-          {/* TODO: Filters */}
           <StarRatingFilter
             selectedStars={selectedStars}
             onChange={handleStarsChange}
@@ -66,6 +83,14 @@ const Search = () => {
           <HotelTypesFilter
             selectedHotelTypes={selectedHotelTypes}
             onChange={handleHotelTypeChange}
+          />
+          <FacilitiesFilter
+            selectedFacilities={selectedFacilities}
+            onChange={handleFacilityChange}
+          />
+          <PriceFilter
+            selectedPrice={selectedPrice}
+            onChange={(value?: number) => setSelectedPrice(value)}
           />
         </div>
       </div>
@@ -75,7 +100,10 @@ const Search = () => {
             {hotelData?.pagination.total} Hotels found{" "}
             {search.destination && `in ${search.destination}`}
           </span>
-          {/* TODO: sort options */}
+          <SearchSortOptions
+            selectedSortOption={selectedSortOption}
+            onChange={(value: string) => setSelectedSortOption(value)}
+          />
         </div>
         {hotelData?.data.map((hotel) => (
           <SearchResultCard hotel={hotel} key={hotel._id} />

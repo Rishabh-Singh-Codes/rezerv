@@ -128,7 +128,7 @@ export type SearchParams = {
   facilities?: string[];
   types?: string[];
   stars?: string[];
-  maxPrice: string;
+  maxPrice?: string;
   sortOption?: string;
 };
 
