@@ -27,7 +27,7 @@ test("should show hotel search results", async ({ page }) => {
   await expect(page.getByText("Test Hotel").first()).toBeVisible();
 });
 
-test("should show hotel details", async ({page}) => {
+test("should show hotel details", async ({ page }) => {
   await page.goto(UI_URL);
 
   await page.getByPlaceholder("Where are you going?").fill("Test city");
@@ -36,6 +36,36 @@ test("should show hotel details", async ({page}) => {
   await expect(page.getByText("Test Hotel").first()).toBeVisible();
   await page.getByText("Test Hotel").first().click();
   await expect(page).toHaveURL(/detail/);
-  await expect(page.getByRole("button", {name: "Book Now"})).toBeVisible();
+  await expect(page.getByRole("button", { name: "Book Now" })).toBeVisible();
+});
 
-})
+test("should book hotel", async ({ page }) => {
+  await page.goto(UI_URL);
+
+  await page.getByPlaceholder("Where are you going?").fill("Test city");
+
+  const date = new Date();
+  date.setDate(date.getDate() + 3);
+  const formattedDate = date.toISOString().split("T")[0];
+  await page.getByPlaceholder("Check-out  Date").fill(formattedDate);
+
+  await page.getByRole("button", { name: "Search" }).click();
+
+  await expect(page.getByText("Test Hotel").first()).toBeVisible();
+  await page.getByText("Test Hotel").first().click();
+  await page.getByRole("button", { name: "Book Now" }).click();
+
+  await expect(page.getByText("Total Cost: ₹6000.00")).toBeVisible();
+
+  const stripeFrame = page.frameLocator("iframe").first();
+  await stripeFrame
+    .locator('[placeholder="Card number"]')
+    .fill("4000003560000008");
+  await stripeFrame.locator('[placeholder="MM / YY"]').fill("1234");
+  await stripeFrame.locator('[placeholder="CVC"]').fill("567");
+
+  await page.getByRole("button", { name: "Confirm Booking" }).click();
+  await page.waitForTimeout(20000);
+
+  await expect(page.getByText("Booking Confirmed!")).toBeVisible();
+});
