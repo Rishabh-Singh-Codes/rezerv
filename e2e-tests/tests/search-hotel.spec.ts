@@ -65,7 +65,13 @@ test("should book hotel", async ({ page }) => {
   await stripeFrame.locator('[placeholder="CVC"]').fill("567");
 
   await page.getByRole("button", { name: "Confirm Booking" }).click();
-  await page.waitForTimeout(20000);
+  await page.waitForTimeout(10000);
+
+  const confirmationFrame = page.frameLocator("#challengeFrame");
+  await confirmationFrame.getByRole("button", {name: "Complete"}).click();
 
   await expect(page.getByText("Booking Confirmed!")).toBeVisible();
+
+  await page.getByRole("link", {name: "My Bookings"}).click();
+  await expect(page.getByText("Test Hotel").first()).toBeVisible();
 });

@@ -41,9 +41,9 @@ const MyBookings = () => {
                   <div>
                     <span className="font-bold mr-2">Duration:</span>
                     <span>
-                      {new Date(booking.checkIn).toISOString().split("T")[0]}
+                      {new Date(booking.checkIn).toDateString()}
                       &nbsp;to&nbsp;
-                      {new Date(booking.checkOut).toISOString().split("T")[0]}
+                      {new Date(booking.checkOut).toDateString()}
                     </span>
                   </div>
                   <div>
