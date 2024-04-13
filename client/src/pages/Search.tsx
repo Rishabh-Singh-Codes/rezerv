@@ -71,7 +71,7 @@ const Search = () => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-[250px_1fr] gap-5">
-      <div className="rounded-md border border-slate-300 p-5 h-fit sticky top-10">
+      <div className="rounded-md border border-slate-300 p-5 h-fit sticky top-10 hidden md:block">
         <div className="space-y-5">
           <h3 className="text-lg font-semibold border-b border-slate-300 pb-5">
             Filter by:
@@ -100,10 +100,12 @@ const Search = () => {
             {hotelData?.pagination.total} Hotels found{" "}
             {search.destination && `in ${search.destination}`}
           </span>
-          <SearchSortOptions
-            selectedSortOption={selectedSortOption}
-            onChange={(value: string) => setSelectedSortOption(value)}
-          />
+          <div className="w-1/2 md:w-1/4">
+            <SearchSortOptions
+              selectedSortOption={selectedSortOption}
+              onChange={(value: string) => setSelectedSortOption(value)}
+            />
+          </div>
         </div>
         {hotelData?.data.map((hotel) => (
           <SearchResultCard hotel={hotel} key={hotel._id} />
