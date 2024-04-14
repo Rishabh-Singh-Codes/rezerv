@@ -77,7 +77,7 @@ router.post(
 // GET: api/my-hotels: fetching all user hotels
 router.get("/", verifyToken, async (req: Request, res: Response) => {
   try {
-    const hotels = await Hotel.find({ userId: req.userId });
+    const hotels = await Hotel.find({ userId: req.userId }).sort("-lastUpdated");
     res.json(hotels);
   } catch (error) {
     console.log("Error: fetching all user hotels \n", error);

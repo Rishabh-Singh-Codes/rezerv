@@ -43,7 +43,7 @@ const ManageHotelForm = ({ onSave, isLoading, hotel }: Props) => {
       formData.append("hotelId", hotel._id);
     }
 
-    formData.append("name", formDataJson.name); 
+    formData.append("name", formDataJson.name);
     formData.append("city", formDataJson.city);
     formData.append("country", formDataJson.country);
     formData.append("description", formDataJson.description);
@@ -57,10 +57,10 @@ const ManageHotelForm = ({ onSave, isLoading, hotel }: Props) => {
       formData.append(`facilities[${index}]`, facility);
     });
 
-    if(formDataJson.imageUrls) {
+    if (formDataJson.imageUrls) {
       formDataJson.imageUrls.forEach((url, index) => {
         formData.append(`imageUrls[${index}]`, url);
-      })
+      });
     }
 
     Array.from(formDataJson.imageFiles).forEach((imageFile) => {
@@ -78,11 +78,18 @@ const ManageHotelForm = ({ onSave, isLoading, hotel }: Props) => {
         <FacilitiesSection />
         <GuestsSection />
         <ImagesSection />
-        <span className="flex justify-end">
+        <span className="flex justify-between">
           <button
             type="submit"
             disabled={isLoading}
-            className="bg-blue-400 text-white p-2 font-bold hover:bg-blue-500 text-lg rounded-md disabled:bg-gray-400"
+            className="bg-red-500 text-white p-2 font-bold h-full hover:bg-red-400 text-base rounded-md cursor-pointer transition w-1/5"
+          >
+            Delete
+          </button>
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="bg-blue-500 text-white p-2 font-bold h-full hover:bg-blue-400 text-base rounded-md cursor-pointer transition w-1/5"
           >
             {isLoading ? "Saving..." : "Save"}
           </button>
