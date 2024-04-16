@@ -38,8 +38,8 @@ const SignIn = () => {
   });
 
   return (
-    <form action="" className="flex flex-col gap-5" onSubmit={onSubmit}>
-      <h2 className="text-3xl">Sign In</h2>
+    <form action="" className="flex flex-col gap-5 md:w-1/2 md:mx-auto" onSubmit={onSubmit}>
+      <h2 className="text-3xl font-bold">Sign In</h2>
       <label className="text-gray-700 text-sm font-bold flex-1">
         Email
         <input
@@ -69,7 +69,7 @@ const SignIn = () => {
         )}
       </label>
 
-      <span className="flex items-center justify-between">
+      <span className="flex flex-col space-y-5 md:space-y-0 md:flex-row items-center justify-between">
         <span className="text-sm">
           Not registered? <Link to="/register" className="underline">Create an account here ↗</Link>
         </span>
