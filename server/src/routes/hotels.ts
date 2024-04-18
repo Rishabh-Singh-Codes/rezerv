@@ -4,58 +4,14 @@ import { BookingType, HotelSearchResponse } from "../shared/types";
 import { param, validationResult } from "express-validator";
 import Stripe from "stripe";
 import verifyToken from "../middleware/auth";
-import { getAllHotels } from "../controllers/hotels";
+import { getAllHotels, searchHotels } from "../controllers/hotels";
 
 const stripe = new Stripe(process.env.STRIPE_API_KEY as string);
 
 const router = express.Router();
 
 // /api/hotels/search
-router.get("/search", async (req: Request, res: Response) => {
-  try {
-    const query = constructSearchQuery(req.query);
-
-    let sortOptions = {};
-    switch (req.query.sortOption) {
-      case "starRating":
-        sortOptions = { starRating: -1 };
-        break;
-      case "pricePerNightAsc":
-        sortOptions = { pricePerNight: 1 };
-        break;
-      case "pricePerNightDesc":
-        sortOptions = { pricePerNight: -1 };
-        break;
-    }
-
-    const pageSize = 5;
-    const pageNumber = parseInt(
-      req.query.page ? req.query.page.toString() : "1"
-    );
-    const skip = (pageNumber - 1) * pageSize;
-
-    const hotels = await Hotel.find(query)
-      .sort(sortOptions)
-      .skip(skip)
-      .limit(pageSize);
-
-    const total = await Hotel.countDocuments(query);
-
-    const response: HotelSearchResponse = {
-      data: hotels,
-      pagination: {
-        total,
-        page: pageNumber,
-        pages: Math.ceil(total / pageSize),
-      },
-    };
-
-    res.json(response);
-  } catch (error) {
-    console.log("Error: searching hotels \n", error);
-    res.status(500).json({ message: "Something went wrong" });
-  }
-});
+router.get("/search", searchHotels);
 
 // /api/hotels/
 router.get("/", getAllHotels);
