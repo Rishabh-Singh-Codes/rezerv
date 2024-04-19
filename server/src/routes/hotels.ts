@@ -1,10 +1,14 @@
 import express, { Request, Response } from "express";
 import Hotel from "../models/hotel";
-import { BookingType, HotelSearchResponse } from "../shared/types";
-import { param, validationResult } from "express-validator";
+import { BookingType } from "../shared/types";
+import { param } from "express-validator";
 import Stripe from "stripe";
 import verifyToken from "../middleware/auth";
-import { getAllHotels, searchHotels } from "../controllers/hotels";
+import {
+  getAllHotels,
+  searchHotels,
+  getHotelById,
+} from "../controllers/hotels";
 
 const stripe = new Stripe(process.env.STRIPE_API_KEY as string);
 
@@ -20,22 +24,7 @@ router.get("/", getAllHotels);
 router.get(
   "/:id",
   [param("id").notEmpty().withMessage("Hotel ID is required")],
-  async (req: Request, res: Response) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
-    const id = req.params.id.toString();
-
-    try {
-      const hotel = await Hotel.findById(id);
-      res.json(hotel);
-    } catch (error) {
-      console.log("Error: searching a single hotel \n", error);
-      res.status(500).json({ message: "Something went wrong" });
-    }
-  }
+  getHotelById
 );
 
 // /api/hotels/:hotelId/bookings/payment-intent

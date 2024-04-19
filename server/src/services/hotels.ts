@@ -47,6 +47,12 @@ const getAllHotels = async () => {
   return hotels;
 };
 
+const getHotelById = async (id: string) => {
+  const hotel = await Hotel.findById(id);
+
+  return hotel;
+};
+
 const constructSearchQuery = (queryParams: any) => {
   let constructedQuery: any = {};
 
@@ -105,4 +111,5 @@ const constructSearchQuery = (queryParams: any) => {
 export default {
   getAllHotels,
   searchHotels,
+  getHotelById,
 };
