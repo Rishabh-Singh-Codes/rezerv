@@ -158,17 +158,8 @@ const BookingForm = ({ currentUser, paymentIntent }: Props) => {
     translate-x-5 -translate-y-24 opacity-0 m-4 mx-auto w-80"
             >
               <span className="block font-semibold">Testing?</span>
-              INDIA 🇮🇳: Card No.: 4000003560000008, any future date for MM/YY &
+              💳 Use Card No.: 4000003560000008, any future date for MM/YY &
               any 3 digits for CVC. 
-              <span className="inline-block">Other Countries: &nbsp;</span>
-              <a
-                href="https://docs.stripe.com/testing?testing-method=card-numbers#visa"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-400 inline"
-              >
-                check this ↗
-              </a>
             </span>
           </div>
         </div>

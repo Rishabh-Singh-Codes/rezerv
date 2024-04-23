@@ -10,7 +10,7 @@ router.get("/", verifyToken, async (req: Request, res: Response) => {
   try {
     const hotels = await Hotel.find({
       bookings: { $elemMatch: { userId: req.userId } },
-    });
+    }).sort("-lastUpdated");
 
     const results = hotels.map((hotel) => {
       const userBookings = hotel.bookings.filter(

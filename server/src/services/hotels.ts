@@ -1,5 +1,9 @@
 import Hotel from "../models/hotel";
 import { HotelSearchResponse } from "../shared/types";
+import { constructSearchQuery } from "../utils/query";
+import Stripe from "stripe";
+
+const stripe = new Stripe(process.env.STRIPE_API_KEY as string);
 
 const searchHotels = async (queryParams: any) => {
   const query = constructSearchQuery(queryParams);
@@ -53,63 +57,52 @@ const getHotelById = async (id: string) => {
   return hotel;
 };
 
-const constructSearchQuery = (queryParams: any) => {
-  let constructedQuery: any = {};
-
-  if (queryParams.destination) {
-    constructedQuery.$or = [
-      { city: new RegExp(queryParams.destination, "i") },
-      { country: new RegExp(queryParams.destination, "i") },
-    ];
+const createPaymentIntent = async(numberOfNights: number, hotelId: string, userId: string) => {
+  const hotel = await Hotel.findById(hotelId);
+  if (!hotel) {
+    return {
+      status: 400,
+      result: {
+        message: "Hotel not found"
+      }
+    }
   }
 
-  if (queryParams.adultCount) {
-    constructedQuery.adultCount = {
-      $gte: parseInt(queryParams.adultCount),
-    };
+  const totalCost = hotel.pricePerNight * numberOfNights;
+
+  const paymentIntent = await stripe.paymentIntents.create({
+    amount: totalCost * 100,
+    currency: "inr",
+    metadata: {
+      userId,
+      hotelId,
+    },
+  });
+
+  if (!paymentIntent.client_secret) {
+    return {
+      status: 500,
+      result: {
+        message: "Error creating payment intent"
+      }
+    }
   }
 
-  if (queryParams.childCount) {
-    constructedQuery.childCount = {
-      $gte: parseInt(queryParams.childCount),
-    };
+  const response = {
+    paymentIntentId: paymentIntent.id,
+    clientSecret: paymentIntent.client_secret.toString(),
+    totalCost,
+  };
+
+  return {
+    status: 200,
+    result: response
   }
-
-  if (queryParams.facilities) {
-    constructedQuery.facilities = {
-      $all: Array.isArray(queryParams.facilities)
-        ? queryParams.facilities
-        : [queryParams.facilities],
-    };
-  }
-
-  if (queryParams.types) {
-    constructedQuery.type = {
-      $in: Array.isArray(queryParams.types)
-        ? queryParams.types
-        : [queryParams.types],
-    };
-  }
-
-  if (queryParams.stars) {
-    const starRatings = Array.isArray(queryParams.stars)
-      ? queryParams.stars.map((star: string) => parseInt(star))
-      : parseInt(queryParams.stars);
-
-    constructedQuery.starRating = { $in: starRatings };
-  }
-
-  if (queryParams.maxPrice) {
-    constructedQuery.pricePerNight = {
-      $lte: parseInt(queryParams.maxPrice).toString(),
-    };
-  }
-
-  return constructedQuery;
-};
+}
 
 export default {
   getAllHotels,
   searchHotels,
   getHotelById,
+  createPaymentIntent
 };

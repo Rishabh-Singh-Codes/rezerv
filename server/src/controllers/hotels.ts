@@ -43,3 +43,22 @@ export const getHotelById = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Something went wrong" });
   }
 };
+
+export const createPaymentIntent = async (req: Request, res: Response) => {
+  try {
+    const { numberOfNights } = req.body;
+    const hotelId = req.params.hotelId;
+    const { userId } = req;
+
+    const { status, result } = await hotelsService.createPaymentIntent(
+      numberOfNights,
+      hotelId,
+      userId
+    );
+
+    res.status(status).send(result);
+  } catch (error) {
+    console.log("Error: creating payment intent \n", error);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};
