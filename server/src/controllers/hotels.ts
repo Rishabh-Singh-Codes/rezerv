@@ -62,3 +62,21 @@ export const createPaymentIntent = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Something went wrong" });
   }
 };
+
+export const createRoomBooking = async (req: Request, res: Response) => {
+  try {
+    const { body, userId } = req;
+    const { hotelId } = req.params;
+
+    const { status, result } = await hotelsService.createRoomBooking(
+      body,
+      userId,
+      hotelId
+    );
+
+    res.status(status).send(result);
+  } catch (error) {
+    console.log("Error: booking hotel \n", error);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};

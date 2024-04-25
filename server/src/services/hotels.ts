@@ -1,5 +1,5 @@
 import Hotel from "../models/hotel";
-import { HotelSearchResponse } from "../shared/types";
+import { BookingType, HotelSearchResponse, HotelType } from "../shared/types";
 import { constructSearchQuery } from "../utils/query";
 import Stripe from "stripe";
 
@@ -57,15 +57,19 @@ const getHotelById = async (id: string) => {
   return hotel;
 };
 
-const createPaymentIntent = async(numberOfNights: number, hotelId: string, userId: string) => {
+const createPaymentIntent = async (
+  numberOfNights: number,
+  hotelId: string,
+  userId: string
+) => {
   const hotel = await Hotel.findById(hotelId);
   if (!hotel) {
     return {
       status: 400,
       result: {
-        message: "Hotel not found"
-      }
-    }
+        message: "Hotel not found",
+      },
+    };
   }
 
   const totalCost = hotel.pricePerNight * numberOfNights;
@@ -83,9 +87,9 @@ const createPaymentIntent = async(numberOfNights: number, hotelId: string, userI
     return {
       status: 500,
       result: {
-        message: "Error creating payment intent"
-      }
-    }
+        message: "Error creating payment intent",
+      },
+    };
   }
 
   const response = {
@@ -96,13 +100,91 @@ const createPaymentIntent = async(numberOfNights: number, hotelId: string, userI
 
   return {
     status: 200,
-    result: response
+    result: response,
+  };
+};
+
+const createRoomBooking = async (
+  body: HotelType & {
+    paymentIntentId: string;
+    checkIn: Date;
+    checkOut: Date;
+    totalCost: number;
+    firstName: string;
+    lastName: string;
+    email: string;
+  },
+  userId: string,
+  hotelId: string
+) => {
+  const { paymentIntentId } = body;
+  const paymentIntent = await stripe.paymentIntents.retrieve(
+    paymentIntentId as string
+  );
+
+  if (!paymentIntent) {
+    return {
+      status: 400,
+      result: {
+        message: "Payment intent not found",
+      },
+    };
   }
-}
+
+  if (
+    paymentIntent.metadata.hotelId !== hotelId ||
+    paymentIntent.metadata.userId !== userId
+  ) {
+    return {
+      status: 400,
+      result: {
+        message: "Payment intent mismatch",
+      },
+    };
+  }
+
+  if (paymentIntent.status !== "succeeded") {
+    return {
+      status: 400,
+      result: {
+        message: `Payment intent not succeeded. Status: ${paymentIntent.status}`,
+      },
+    };
+  }
+
+  const newBooking: BookingType = {
+    ...body,
+    userId,
+  };
+
+  const hotel = await Hotel.findOneAndUpdate(
+    { _id: hotelId },
+    {
+      $push: { bookings: newBooking },
+    }
+  );
+
+  if (!hotel) {
+    return {
+      status: 400,
+      result: {
+        message: "Hotel not found",
+      },
+    };
+  }
+
+  await hotel.save();
+
+  return {
+    status: 200,
+    result: hotel,
+  };
+};
 
 export default {
   getAllHotels,
   searchHotels,
   getHotelById,
-  createPaymentIntent
+  createPaymentIntent,
+  createRoomBooking,
 };
