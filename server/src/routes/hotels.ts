@@ -1,8 +1,5 @@
-import express, { Request, Response } from "express";
-import Hotel from "../models/hotel";
-import { BookingType } from "../shared/types";
+import express from "express";
 import { param } from "express-validator";
-import Stripe from "stripe";
 import verifyToken from "../middleware/auth";
 import {
   getAllHotels,
@@ -11,8 +8,6 @@ import {
   createPaymentIntent,
   createRoomBooking,
 } from "../controllers/hotels";
-
-const stripe = new Stripe(process.env.STRIPE_API_KEY as string);
 
 const router = express.Router();
 
