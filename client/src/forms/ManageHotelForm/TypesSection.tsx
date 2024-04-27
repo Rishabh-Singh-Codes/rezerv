@@ -17,6 +17,7 @@ const TypesSection = () => {
         {hotelTypes.map((type) => (
           <label
             id={type}
+            key={type}
             className={`cursor-pointer text-sm rounded-full px-4 py-2 text-center ${
               typeWatch === type ? "bg-blue-200 font-semibold" : "bg-gray-200"
             }`}
@@ -32,7 +33,9 @@ const TypesSection = () => {
         ))}
       </div>
       {errors.type && (
-        <span className="text-red-500 font-bold text-sm">{errors.type.message}</span>
+        <span className="text-red-500 font-bold text-sm">
+          {errors.type.message}
+        </span>
       )}
     </div>
   );
