@@ -5,6 +5,7 @@ import Hotel from "../models/hotel";
 import verifyToken from "../middleware/auth";
 import { body } from "express-validator";
 import { HotelType } from "../shared/types";
+import { addMyHotel } from "../controllers/my-hotels";
 
 const router = express.Router();
 
@@ -48,30 +49,7 @@ router.post(
       .withMessage("Rating is required and must be a number"),
   ],
   upload.array("imageFiles", 6),
-  async (req: Request, res: Response) => {
-    try {
-      const imageFiles = req.files as Express.Multer.File[];
-      const newHotel: HotelType = req.body;
-
-      // Uploading images to cloudinary
-      const imageUrls = await uploadImages(imageFiles);
-
-      // adding all parameters to newHotel
-      newHotel.imageUrls = imageUrls;
-      newHotel.lastUpdated = new Date();
-      newHotel.userId = req.userId;
-
-      // saving in the DB
-      const hotel = new Hotel(newHotel);
-      await hotel.save();
-
-      // send response
-      res.status(201).send(hotel);
-    } catch (error) {
-      console.log("Error: creating hotel \n", error);
-      res.status(500).json({ message: "Something went wrong!" });
-    }
-  }
+  addMyHotel
 );
 
 // GET: api/my-hotels: fetching all user hotels
