@@ -7,6 +7,7 @@ import {
   fetchMyHotelById,
   fetchMyHotels,
   updateMyHotelById,
+  deleteMyHotelById,
 } from "../controllers/my-hotels";
 
 const router = express.Router();
@@ -57,15 +58,18 @@ router.post(
 // GET: api/my-hotels: fetching all user hotels
 router.get("/", verifyToken, fetchMyHotels);
 
-// GET: api/my-hotels/:id: fetching a hotel's details
+// GET: api/my-hotels/:id -> fetching a hotel's details
 router.get("/:id", verifyToken, fetchMyHotelById);
 
-// PUT: api/my-hotels/:id: updatiing a hotel's details
+// PUT: api/my-hotels/:hotelId -> updating a hotel's details
 router.put(
   "/:hotelId",
   verifyToken,
   upload.array("imageFiles"),
   updateMyHotelById
 );
+
+// DELETE: api/my-hotels/:id -> delete a hotel
+router.delete("/:hotelId", verifyToken, deleteMyHotelById);
 
 export default router;

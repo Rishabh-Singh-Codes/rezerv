@@ -75,9 +75,32 @@ const updateMyHotelById = async (
   };
 };
 
+const deleteMyHotelById = async (hotelId: string) => {
+  const hotel = await Hotel.findById(hotelId);
+
+  if (!hotel) {
+    return {
+      status: 404,
+      result: {
+        message: "Hotel not found",
+      },
+    };
+  }
+
+  await Hotel.findByIdAndDelete(hotelId);
+
+  return {
+    status: 200,
+    result: {
+      message: "Hotel deleted successfully",
+    },
+  };
+};
+
 export default {
   addMyHotel,
   fetchMyHotels,
   fetchMyHotelById,
   updateMyHotelById,
+  deleteMyHotelById,
 };

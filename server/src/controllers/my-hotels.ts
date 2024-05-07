@@ -64,3 +64,16 @@ export const updateMyHotelById = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Something went wrong" });
   }
 };
+
+export const deleteMyHotelById = async (req: Request, res: Response) => {
+  const hotelId = req.params.hotelId;
+
+  try {
+    const { status, result } = await myHotelsService.deleteMyHotelById(hotelId);
+    
+    res.status(status).json(result);
+  } catch (error) {
+    console.log("Error: deleting single hotel \n", error);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};
