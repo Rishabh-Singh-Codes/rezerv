@@ -67,10 +67,11 @@ export const updateMyHotelById = async (req: Request, res: Response) => {
 
 export const deleteMyHotelById = async (req: Request, res: Response) => {
   const hotelId = req.params.hotelId;
+  const { userId } = req;
 
   try {
-    const { status, result } = await myHotelsService.deleteMyHotelById(hotelId);
-    
+    const { status, result } = await myHotelsService.deleteMyHotelById(hotelId, userId);
+
     res.status(status).json(result);
   } catch (error) {
     console.log("Error: deleting single hotel \n", error);

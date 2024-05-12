@@ -136,6 +136,19 @@ export const updateMyHotelById = async (hotelFormData: FormData) => {
   return response.json();
 };
 
+export const deleteMyHotelById = async (hotelId: string) => {
+  const response = await fetch(`${API_BASE_URL}/api/my-hotels/${hotelId}`, {
+    credentials: "include",
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    throw new Error("Error deleting hotels");
+  }
+
+  return response.json();
+};
+
 export type SearchParams = {
   destination?: string;
   checkIn?: string;
