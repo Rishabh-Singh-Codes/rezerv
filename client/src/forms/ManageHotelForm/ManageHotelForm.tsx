@@ -6,6 +6,7 @@ import GuestsSection from "./GuestsSection";
 import ImagesSection from "./ImagesSection";
 import { HotelType } from "../../../../server/src/shared/types";
 import { useEffect } from "react";
+import { useModalContext } from "@/contexts/ModalContext";
 
 export type HotelFormData = {
   name: string;
@@ -70,6 +71,8 @@ const ManageHotelForm = ({ onSave, isLoading, hotel }: Props) => {
     onSave(formData);
   });
 
+  const { onOpen } = useModalContext();
+
   return (
     <FormProvider {...formMethods}>
       <form className="flex flex-col gap-10" onSubmit={onSubmit}>
@@ -79,13 +82,17 @@ const ManageHotelForm = ({ onSave, isLoading, hotel }: Props) => {
         <GuestsSection />
         <ImagesSection />
         <span className="flex justify-between">
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="bg-red-500 text-white p-2 font-bold h-full hover:bg-red-400 text-base rounded-md cursor-pointer transition w-1/5"
-          >
-            Delete
-          </button>
+          {hotel?._id && (
+            <button
+              className="bg-red-500 text-white p-2 font-bold h-full hover:bg-red-400 text-base rounded-md cursor-pointer transition w-1/5"
+              onClick={(e) => {
+                e.preventDefault();
+                onOpen("deleteHotel", hotel);
+              }}
+            >
+              Delete
+            </button>
+          )}
           <button
             type="submit"
             disabled={isLoading}

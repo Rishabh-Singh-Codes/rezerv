@@ -16,12 +16,14 @@ import HotelDetails from "./pages/HotelDetails";
 import Booking from "./pages/Booking";
 import MyBookings from "./pages/MyBookings";
 import Home from "./pages/Home";
+import { ModalContextProvider } from "./contexts/ModalContext";
 
 function App() {
   const { isLoggedIn } = useAppContext();
 
   return (
     <Router>
+      <ModalContextProvider>
       <Routes>
         <Route
           path="/"
@@ -110,6 +112,7 @@ function App() {
         )}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
+      </ModalContextProvider>
     </Router>
   );
 }

@@ -75,8 +75,13 @@ const updateMyHotelById = async (
   };
 };
 
-const deleteMyHotelById = async (hotelId: string) => {
-  const hotel = await Hotel.findById(hotelId);
+const deleteMyHotelById = async (hotelId: string, userId: string) => {
+  const hotel = await Hotel.find({
+    where: {
+      _id: hotelId,
+      userId
+    }
+  });
 
   if (!hotel) {
     return {
