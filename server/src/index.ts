@@ -10,6 +10,7 @@ import { v2 as cloudinary } from "cloudinary";
 import myHotelRoutes from "./routes/my-hotels";
 import hotelRoutes from "./routes/hotels";
 import myBookingsRoutes from "./routes/my-bookings";
+import cron from "node-cron";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -44,4 +45,20 @@ app.get("*", (req: Request, res: Response) => {
 
 app.listen(8080, () => {
   console.log("Server running on port: 8080");
+});
+
+const url = "https://rezerv.onrender.com/";
+
+cron.schedule("*/10 * * * *", async () => {
+  try {
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      console.log(`HTTP error while pinging at ${new Date().toLocaleString(undefined, {timeZone: 'Asia/Kolkata'})}`);
+    }
+
+    console.log(`Successfully pinged at ${new Date().toLocaleString(undefined, {timeZone: 'Asia/Kolkata'})}`);
+  } catch (error) {
+    console.log(`error while pinging at ${new Date().toLocaleString(undefined, {timeZone: 'Asia/Kolkata'})}`, error);
+  }
 });
